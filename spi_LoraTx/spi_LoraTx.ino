@@ -35,9 +35,8 @@ void loop()
     // {
     //     lora.write(Serial.read());
     // }
-    // const char* data = "sexy";
-    // send_AT_command(data);
-    send_AT_command("0000");
+    send_AT_command("68656C6C6F2C20776F726C642133"); //send "hello, world"
+    delay(200);
 
 }
 
