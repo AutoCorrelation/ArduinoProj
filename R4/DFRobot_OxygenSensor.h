@@ -56,7 +56,7 @@ public:
    * @return Oxygen concentration, unit
    */  
   float getOxygenData(uint8_t collectNum);
-  
+  // float justread();
 private:
   void readFlash();
   void i2cWrite(uint8_t reg, uint8_t data);
