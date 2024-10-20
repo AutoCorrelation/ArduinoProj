@@ -15,15 +15,15 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define ADDRESS_0   0x70
-#define ADDRESS_1   0x71
-#define ADDRESS_2   0x72
-#define ADDRESS_3   0x73  ///< iic slave Address select
-#define OCOUNT      100   ///< oxygen Count Value
-#define OXYGEN_DATA_REGISTER 0x03   ///< register for oxygen data
-#define USER_SET_REGISTER    0x08   ///< register for users to configure key value manually
-#define AUTUAL_SET_REGISTER  0x09   ///< register that automatically configure key value
-#define GET_KEY_REGISTER     0x0A   ///< register for obtaining key value
+#define ADDRESS_0 0x70
+#define ADDRESS_1 0x71
+#define ADDRESS_2 0x72
+#define ADDRESS_3 0x73            ///< iic slave Address select
+#define OCOUNT 100                ///< oxygen Count Value
+#define OXYGEN_DATA_REGISTER 0x03 ///< register for oxygen data
+#define USER_SET_REGISTER 0x08    ///< register for users to configure key value manually
+#define AUTUAL_SET_REGISTER 0x09  ///< register that automatically configure key value
+#define GET_KEY_REGISTER 0x0A     ///< register for obtaining key value
 
 class DFRobot_OxygenSensor
 {
@@ -54,14 +54,14 @@ public:
    * @param collectNum The number of data to be smoothed
    * @n     For example, upload 20 and take the average value of the 20 data, then return the concentration data
    * @return Oxygen concentration, unit
-   */  
+   */
   float getOxygenData(uint8_t collectNum);
   // float justread();
 private:
   void readFlash();
   void i2cWrite(uint8_t reg, uint8_t data);
-  uint8_t  _addr;                               
-  float _Key = 0.0;                          ///< oxygen key value
+  uint8_t _addr;
+  float _Key = 0.0; ///< oxygen key value
   float oxygenData[OCOUNT] = {0.00};
   float getAverageNum(float bArray[], uint8_t len);
   TwoWire *_pWire;
