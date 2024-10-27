@@ -3,6 +3,7 @@
 
 #include "DFRobot_OxygenSensor.h"
 #include "SparkFun_STC3x_Arduino_Library.h"
+#include "Arduino.h"
 
 class Device
 {
@@ -14,7 +15,7 @@ public:
     void fastCalibrate();
     float getRER();
     float getMAXRER();
-    void sleepMode();
+    void sleep();
     void wakeUp();
 
 private:

@@ -49,8 +49,8 @@ void Device::LPF() {
     filteredValue = alpha * currentRER + (1 - alpha) * filteredValue;
 }
 
-void Device::sleepMode() {
-    CO2.enterSleepMode();
+void Device::sleep() {
+    
 }
 
 void Device::wakeUp() {

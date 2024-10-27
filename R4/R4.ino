@@ -12,8 +12,7 @@
  * @date 2021-10-22
  * @url https://github.com/DFRobot/DFRobot_OxygenSensor
  */
-#include "DFRobot_OxygenSensor.h"
-#include "LiquidCrystal_I2C.h"
+#include "./src/Device.h"
 
 /**
  * i2c slave Address, The default is ADDRESS_3.
@@ -50,7 +49,6 @@ void setup(void)
 void loop(void)
 {
   float oxygenData = oxygen.getOxygenData(COLLECT_NUMBER);
-  lpf(oxygenData);
   // float oxygenData = oxygen.justread();
   Serial.print(" oxygen concentration is ");
   Serial.print(oxygenData);
