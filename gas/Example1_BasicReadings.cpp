@@ -25,7 +25,7 @@ STC3x mySensor;
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println(F("STC3x Example"));
   Wire.begin();
 

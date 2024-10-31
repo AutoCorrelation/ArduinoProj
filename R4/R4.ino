@@ -12,7 +12,10 @@
  * @date 2021-10-22
  * @url https://github.com/DFRobot/DFRobot_OxygenSensor
  */
-#include "./src/Device.h"
+// #include "./src/Device.h"
+#include "./src/DFRobot_OxygenSensor.h"
+#include "./src/LiquidCrystal_I2C.h"
+#include "./src/SparkFun_STC3x_Arduino_Library.h"
 
 /**
  * i2c slave Address, The default is ADDRESS_3.
@@ -27,8 +30,10 @@
 #define ALPHA 0.9
 DFRobot_OxygenSensor oxygen;
 LiquidCrystal_I2C lcd(LCD_IICAddress, 16, 2);
-void lpf(float data);
-float lpfdata;
+STC3x co2;
+
+// void lpf(float data);
+// float lpfdata;
 
 void setup(void)
 {
@@ -38,6 +43,19 @@ void setup(void)
     Serial.println("I2c device number error !");
     delay(1000);
   }
+  if (co2.begin() == false)
+  {
+    Serial.println(F("Sensor not detected. Please check wiring. Freezing..."));
+    while (1)
+      ;
+  }
+  if (co2.setBinaryGas(STC3X_BINARY_GAS_CO2_AIR_25) == false)
+  {
+    Serial.println(F("Could not set the binary gas! Freezing..."));
+    while (1)
+      ;
+  }
+
   Serial.println("I2c connect success !");
   lcd.init();
   lcd.backlight();
@@ -49,9 +67,17 @@ void setup(void)
 void loop(void)
 {
   float oxygenData = oxygen.getOxygenData(COLLECT_NUMBER);
+  static float co2data = 0;
   // float oxygenData = oxygen.justread();
+  if (co2.measureGasConcentration())
+  {
+    co2data = co2.getCO2();
+    delay(100);
+    
+  }
+
   Serial.print(" oxygen concentration is ");
-  Serial.print(oxygenData);
+  Serial.print(co2data);
   Serial.println(" %vol");
   // lcd.clear();
   char O2_buffer[32];
@@ -59,7 +85,7 @@ void loop(void)
   lcd.setCursor(0, 0);
   lcd.printstr(O2_buffer);
   char CO2_buffer[32];
-  sprintf(CO2_buffer, "CO2:%.3f%%vol", 0.5);
+  sprintf(CO2_buffer, "CO2:%.3f%%vol", co2data);
   lcd.setCursor(0, 1);
   lcd.printstr(CO2_buffer);
 
@@ -67,9 +93,9 @@ void loop(void)
 }
 
 /*-----------------------------------------------------------*/
-void lpf(float data)
-{
+// void lpf(float data)
+// {
 
-  lpfdata = ALPHA*lpfdata + (1-ALPHA)*data;
-  // return 0;
-}
+//   lpfdata = ALPHA*lpfdata + (1-ALPHA)*data;
+//   // return 0;
+// }
