@@ -1,68 +1,59 @@
 #include <SoftwareSerial.h>
-// #include <TimerOne.h> // ex https://github.com/delta-G/TimerOne/blob/master/examples/Interrupt/Interrupt.ino
 
-/** Hardware info
- * https://docs.arduino.cc/tutorials/uno-r4-wifi/cheat-sheet/#spi
- * https://docs.rakwireless.com/Product-Categories/WisDuo/RAK3272S-Breakout-Board/Datasheet/
- * 
- * COPI-D11
- * CIPO-D12
- * SCK-D13
- * CS-D10
- * RST=D9
- */
 SoftwareSerial lora(2, 3); // RX, TX
 
+struct SensorData
+{
+    uint8_t section;
+    uint32_t speed;
+    int32_t temperature;
+    bool is_fire;
+};
 
+char* data2hex(SensorData sensor_data);
 
 void setup()
 {
+    SensorData sensor_data;
     Serial.begin(57600);
     lora.begin(57600);
     delay(10);
-    // lora.write("AT");
-    // lora.write("?");
-    // lora.write("\r\n");
 }
 
 void loop()
 {
-    // if (lora.available())
-    // {
-    //     Serial.write(lora.read());
-    // }
-    // if (Serial.available())
-    // {
-    //     lora.write(Serial.read());
-    // }
-    send_AT_command("68656C6C6F2C20776F726C642133"); //send "hello, world"
-    delay(200);
+    sensor_data.section = 2;      // enum (1 byte)
+    sensor_data.speed = 100;      // integer (4 bytes)
+    sensor_data.temperature = 20; // integer (4 bytes, 음수 포함)
+    sensor_data.is_fire = false;  // boolean (1 byte)
 
-}
-
-void send_AT_command(const char *command)
-{
-    // if(strlen(command)%2==1){
-    //     command
-    // }
-
-    lora.write("AT+PSEND=");
+    char command[30];
+    sprintf(command, "AT+PSEND=%s", data2hex(sensor_data));
     lora.write(command);
     lora.write("\r\n");
+
+    delay(1000); // 1초 대기
 }
 
+char* data2hex(SensorData sensor_data)
+{
+    static char hex_data[23]; // static으로 선언하여 함수 외부에서도 접근 가능하게 함
 
-// void checkSerial()
-// {
-//     // 시리얼에 들어오는 데이터가 있는지 확인
-//     if (Serial.available() > 0)
-//     {
-//         // 시리얼 데이터 읽기 및 출력
-//         while (Serial.available() > 0)
-//         {
-//             char incomingByte = Serial.read();  // 데이터 읽기
-//             Serial.print("Received: ");
-//             Serial.println(incomingByte);  // 읽은 데이터 출력
-//         }
-//     }
-// }
+    char hex_section[3];
+    sprintf(hex_section, "%02x", sensor_data.section);
+
+    char hex_speed[9];
+    sprintf(hex_speed, "%08x", sensor_data.speed);
+
+    // 음수 온도를 2의 보수로 변환하여 16진수로 표현
+    char hex_temperature[9];
+    sprintf(hex_temperature, "%08x", sensor_data.temperature);
+
+    char hex_is_fire[3];
+    sprintf(hex_is_fire, "%02x", sensor_data.is_fire);
+
+    // 16진수 문자열을 하나로 결합
+    sprintf(hex_data, "%s%s%s%s", hex_section, hex_speed, hex_temperature, hex_is_fire);
+
+    return hex_data;
+}
