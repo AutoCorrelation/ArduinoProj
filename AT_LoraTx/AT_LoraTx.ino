@@ -91,8 +91,8 @@ SensorData getData()
 
     _data.is_fire = digitalRead(FLAME_PIN);
     _data.temperature = (analogRead(TEMPERATURE_PIN) * 500 / 1023.0);
-    _data.speed = (1e6 / (pulseIn(VELOCITY_PIN,HIGH)+pulseIn(VELOCITY_PIN,LOW))) / 44.0;
-    // _data.speed = (1e6 / 518.13) / 44.0;
+    //_data.speed = (1e6 / (pulseIn(VELOCITY_PIN,HIGH)+pulseIn(VELOCITY_PIN,LOW))) / 44.0;
+    _data.speed = 2;
 
     return _data; // 'sensor_data' 대신 '_data' 반환
 }
