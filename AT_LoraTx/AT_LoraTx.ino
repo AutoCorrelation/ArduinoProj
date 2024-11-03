@@ -15,7 +15,7 @@ SoftwareSerial lora(2, 3); // RX, TX
 
 struct SensorData
 {
-    uint8_t section = SECTION_1;
+    uint8_t section = SECTION_4;
     int32_t speed;
     int32_t temperature;
     int is_fire;
