@@ -29,8 +29,8 @@ char *data2hex(SensorData sensor_data);
 void setup()
 {
     pinMode(FLAME_PIN, INPUT);
+
     
-    // pinmode(TEMPERATURE_PIN, INPUT);
     Serial.begin(57600);
     lora.begin(57600);
     delay(10);
@@ -38,7 +38,7 @@ void setup()
 
 void loop()
 {
-    // sensor_data.section = 2;      // enum (1 byte)
+    // sensor_data.section = 4;      // enum (1 byte)
     // sensor_data.speed = 100;      // integer (4 bytes)
     // sensor_data.temperature = 20; // integer (4 bytes, 음수 포함)
     // sensor_data.is_fire = false;  // boolean (1 byte)
@@ -51,15 +51,19 @@ void loop()
      */
     char command[30];
     sprintf(command, "AT+PSEND=%s", data2hex(sensor_data));
+    // lora.write("AT+PSEND=");
     lora.write(command);
     lora.write("\r\n");
+    delay(500);
 
+    // if(lora.available()){
+    //     Serial.write(lora.read());
+    // }
+    // Serial.println(command);
     // Serial.println(sensor_data.speed);
-    Serial.println(sensor_data.speed);
-    Serial.println(sensor_data.temperature);
-    Serial.println(sensor_data.is_fire);
-
-    delay(1000); // 1초 대기
+    // Serial.println(sensor_data.speed);
+    // Serial.println(sensor_data.temperature);
+    // Serial.println(sensor_data.is_fire);
 }
 
 char *data2hex(SensorData _data)
@@ -90,7 +94,7 @@ SensorData getData()
     SensorData _data;
 
     _data.is_fire = digitalRead(FLAME_PIN);
-    _data.temperature = (analogRead(TEMPERATURE_PIN) * 500 / 1023.0);
+    _data.temperature = (analogRead(TEMPERATURE_PIN) * 0.48828125);
     //_data.speed = (1e6 / (pulseIn(VELOCITY_PIN,HIGH)+pulseIn(VELOCITY_PIN,LOW))) / 44.0;
     _data.speed = 2;
 
