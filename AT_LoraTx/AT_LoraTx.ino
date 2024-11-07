@@ -30,7 +30,6 @@ void setup()
 {
     pinMode(FLAME_PIN, INPUT);
 
-    
     Serial.begin(57600);
     lora.begin(57600);
     delay(10);
@@ -44,7 +43,7 @@ void loop()
     // sensor_data.is_fire = false;  // boolean (1 byte)
 
     sensor_data = getData();
-
+    // sensor_data.temperature = -20; // integer (4 bytes, 음수 포함)
     /**
      * @brief Send sensor_data
      * @param sensor_data
@@ -54,7 +53,9 @@ void loop()
     // lora.write("AT+PSEND=");
     lora.write(command);
     lora.write("\r\n");
-    delay(500);
+    // Serial.write(command);
+    // Serial.write("\r\n");
+    delay(1000);
 
     // if(lora.available()){
     //     Serial.write(lora.read());
