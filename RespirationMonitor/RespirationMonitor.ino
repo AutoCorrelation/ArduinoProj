@@ -1,9 +1,8 @@
 #include <Wire.h>             //i2c통신을 사용하기 때문에 아두이노의 i2c 통신용 라이브러리가 필요
 #include <Adafruit_GFX.h>     // adafruit의 그래픽 관련 라이브러리
 #include <Adafruit_SSD1306.h> // ssd1306 제어용 라이브러리
-
-#include "DFRobot_OxygenSensor.h"
-#include "SparkFun_STC3x_Arduino_Library.h"
+#include <DFRobot_OxygenSensor.h>
+#include <SparkFun_STC3x_Arduino_Library.h>
 
 #define SCREEN_WIDTH 128 // OLED 디스플레이의 가로 픽셀수
 #define SCREEN_HEIGHT 64 // OLED 디스플레이의 세로 픽셀수
@@ -24,7 +23,7 @@ void setup()
     Serial.begin(9600);
     while (!oxygen.begin(Oxygen_IICAddress))
     {
-        Serial.println("I2c device number error !");
+        Serial.println("Oxygen I2c device number error !");
         delay(1000);
     }
     if (co2.begin() == false)
