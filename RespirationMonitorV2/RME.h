@@ -12,7 +12,7 @@
 #define SCREEN_HEIGHT 64
 #define OLED_RESET 4
 #define Oxygen_IICAddress ADDRESS_3
-#define COLLECT_NUMBER 1 // collect number, the collection range is 1-100.
+#define COLLECT_NUMBER 2 // collect number, the collection range is 1-100.
 #define LCD_IICAddress 0x3C
 
 class RME
@@ -24,6 +24,9 @@ private:
     float _oxygenConcentration;
     float _co2Concentration;
     float _breathingRate;
+    float _oxygenOffset;
+    float _carbsRate;
+    float _fatsRate;
 public:
     RME();
     ~RME();
@@ -32,5 +35,6 @@ public:
     float readCO2Concentration();
     float calculateBreathingRate();
     void displayValues();
+    void SerialTest();
 };
 #endif

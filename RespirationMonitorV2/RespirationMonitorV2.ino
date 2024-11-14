@@ -14,5 +14,6 @@ void loop()
     float co2Concentration = rme.readCO2Concentration();
     float breathingRate = rme.calculateBreathingRate();
     rme.displayValues();
-    delay(1000); // 1초 대기
+    rme.SerialTest();
+    delay(75); // 1초 대기
 }
