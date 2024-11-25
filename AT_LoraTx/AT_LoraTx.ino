@@ -3,6 +3,7 @@
 #define TEMPERATURE_PIN A0
 #define VELOCITY_PIN 11
 
+//Section enum type (1 byte)
 enum Section
 {
     SECTION_1 = 1,
@@ -10,9 +11,11 @@ enum Section
     SECTION_3,
     SECTION_4
 };
-
-SoftwareSerial lora(2, 3); // RX, TX
-
+//Lora module UART rx, tx pin
+//FIXME: If don't use serial communication with pc, you can use pin 0, 1 without SoftwareSerial
+//Then you can remove SoftwareSerial library and communicate with Serial.begin()
+SoftwareSerial lora(2, 3);
+//Sensor data structure 
 struct SensorData
 {
     uint8_t section = SECTION_4;
@@ -20,16 +23,15 @@ struct SensorData
     int32_t temperature;
     int is_fire;
 };
-
+//Structure to store sensor data
 SensorData sensor_data;
-
 SensorData getData();
+//Convert sensor data to <hex string> (Lora communication format)
 char *data2hex(SensorData sensor_data);
 
 void setup()
 {
     pinMode(FLAME_PIN, INPUT);
-
     Serial.begin(57600);
     lora.begin(57600);
     delay(10);
@@ -37,39 +39,22 @@ void setup()
 
 void loop()
 {
-    // sensor_data.section = 4;      // enum (1 byte)
-    // sensor_data.speed = 100;      // integer (4 bytes)
-    // sensor_data.temperature = 20; // integer (4 bytes, 음수 포함)
-    // sensor_data.is_fire = false;  // boolean (1 byte)
-
+    //Get sensor data
     sensor_data = getData();
-    // sensor_data.temperature = -20; // integer (4 bytes, 음수 포함)
-    /**
-     * @brief Send sensor_data
-     * @param sensor_data
-     */
     char command[30];
+
+    //Send sensor data to Lora module
     sprintf(command, "AT+PSEND=%s", data2hex(sensor_data));
-    // lora.write("AT+PSEND=");
     lora.write(command);
     lora.write("\r\n");
-    // Serial.write(command);
-    // Serial.write("\r\n");
-    delay(1000);
 
-    // if(lora.available()){
-    //     Serial.write(lora.read());
-    // }
-    // Serial.println(command);
-    // Serial.println(sensor_data.speed);
-    // Serial.println(sensor_data.speed);
-    // Serial.println(sensor_data.temperature);
-    // Serial.println(sensor_data.is_fire);
+    delay(1000);
 }
 
+//define function-----------------------------------
 char *data2hex(SensorData _data)
 {
-    static char hex_data[23]; // static으로 선언하여 함수 외부에서도 접근 가능하게 함
+    static char hex_data[23];
 
     char hex_section[3];
     sprintf(hex_section, "%02x", _data.section);
@@ -77,14 +62,12 @@ char *data2hex(SensorData _data)
     char hex_speed[9];
     sprintf(hex_speed, "%08x", _data.speed);
 
-    // 음수 온도를 2의 보수로 변환하여 16진수로 표현
     char hex_temperature[9];
     sprintf(hex_temperature, "%08x", _data.temperature);
 
     char hex_is_fire[3];
     sprintf(hex_is_fire, "%02x", _data.is_fire);
 
-    // 16진수 문자열을 하나로 결합
     sprintf(hex_data, "%s%s%s%s", hex_section, hex_speed, hex_temperature, hex_is_fire);
 
     return hex_data;
@@ -96,8 +79,7 @@ SensorData getData()
 
     _data.is_fire = digitalRead(FLAME_PIN);
     _data.temperature = (analogRead(TEMPERATURE_PIN) * 0.48828125);
-    //_data.speed = (1e6 / (pulseIn(VELOCITY_PIN,HIGH)+pulseIn(VELOCITY_PIN,LOW))) / 44.0;
-    _data.speed = 2;
+    _data.speed = (1e6 / (pulseIn(VELOCITY_PIN,HIGH)+pulseIn(VELOCITY_PIN,LOW))) / 44.0;
 
-    return _data; // 'sensor_data' 대신 '_data' 반환
+    return _data;
 }
