@@ -1,12 +1,21 @@
 #include "I2CSensor.h"
 #include <Wire.h> // Include Arduino I2C library
 
-// Example I2C address for the sensor
-const int sensorAddress = 0x40;
-
 void I2CSensor::initialize() {
-    Wire.begin(); // Initialize I2C communication
-    // Additional sensor initialization logic if required
+    Serial.begin(9600);
+    Wire.begin();
+
+    if(!oxygen.begin(Oxygen_IICAddress)) {
+        Serial.println("Oxygen I2C device Address Error!");
+        while (1);
+    }
+
+    if(!co2.begin()) {
+        Serial.println("CO2 I2C device Address Error!");
+        while (1);
+    }
+
+
 }
 
 void I2CSensor::update() {
