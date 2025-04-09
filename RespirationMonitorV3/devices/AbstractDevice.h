@@ -1,6 +1,8 @@
 #ifndef ABSTRACT_DEVICE_H
 #define ABSTRACT_DEVICE_H
 
+#include <Wire.h> // Include Arduino I2C library
+#include <Arduino.h> // Include Arduino core library
 #include "./config/Config.h"
 
 class AbstractDevice {
