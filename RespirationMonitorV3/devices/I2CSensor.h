@@ -2,7 +2,6 @@
 #define I2C_SENSOR_H
 
 #include "AbstractDevice.h"
-#include <Wire.h>
 #include "lib/DFRobot_OxygenSensor.h"
 #include "lib/SparkFun_STC3x_Arduino_Library.h"
 #include "lib/Adafruit_GFX.h"
@@ -10,7 +9,7 @@
 
 class I2CSensor : public AbstractDevice {
 private:
-    Adafruit_SSD1306 display; // OLED display object
+    Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET); // OLED display object
     DFRobot_OxygenSensor oxygen; // Oxygen sensor object
     STC3x co2; // CO2 sensor object
     float _oxygenConcentration;        // Stores oxygen concentration value

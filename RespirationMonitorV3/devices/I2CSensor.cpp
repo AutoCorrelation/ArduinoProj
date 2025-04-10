@@ -1,34 +1,49 @@
 #include "I2CSensor.h"
-#include <Wire.h> // Include Arduino I2C library
 
-void I2CSensor::initialize() {
+void I2CSensor::initialize()
+{
     Serial.begin(9600);
-    Wire.begin();
 
-    if(!oxygen.begin(Oxygen_IICAddress)) {
-        Serial.println("Oxygen I2C device Address Error!");
+    while (!display.begin(SSD1306_SWITCHCAPVCC, LCD_IICAddress))
+    {
+        Serial.println("Display I2C device Address Error!");
         while (1);
     }
 
-    if(!co2.begin()) {
-        Serial.println("CO2 I2C device Address Error!");
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0, 28);
+
+    if (!oxygen.begin(Oxygen_IICAddress))
+    {
+        display.println("Oxygen I2C device Address Error!");
+        display.display();
         while (1);
     }
 
-
+    if (!co2.begin())
+    {
+        display.println("CO2 I2C device Address Error!");
+        display.display();
+        while (1);
+    }
 }
 
-void I2CSensor::update() {
+void I2CSensor::update()
+{
     // Placeholder for periodic updates, if needed
 }
 
-float I2CSensor::readValue() {
+float I2CSensor::readValue()
+{
     Wire.beginTransmission(sensorAddress);
     Wire.write(0x00); // Example: Command to request data
     Wire.endTransmission();
 
     Wire.requestFrom(sensorAddress, 2); // Request 2 bytes from the sensor
-    if (Wire.available() == 2) {
+    if (Wire.available() == 2)
+    {
         int highByte = Wire.read();
         int lowByte = Wire.read();
         int rawValue = (highByte << 8) | lowByte;
