@@ -11,8 +11,8 @@
 // Pin definitions
 #define MOTOR_PWM_PIN 9
 #define ENCODER_PIN_A 2
-#define ENCODER_PIN_B 3
-#define ENCODER_BUTTON_PIN 4
+#define ENCODER_PIN_B 4
+#define ENCODER_BUTTON_PIN 3
 
 // I2C addresses
 #define SENSOR_I2C_ADDRESS 0x40
