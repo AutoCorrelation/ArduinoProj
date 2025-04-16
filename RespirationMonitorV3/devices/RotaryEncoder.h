@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "config/Config.h"
+#include "Display.h"
 
 class RotaryEncoder
 {

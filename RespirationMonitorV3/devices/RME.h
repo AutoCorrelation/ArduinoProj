@@ -9,14 +9,6 @@
 #include "lib/DFRobot_OxygenSensor.h"
 #include "lib/SparkFun_STC3x_Arduino_Library.h"
 
-// // Display configuration
-// #define SCREEN_WIDTH 128        // OLED display width in pixels
-// #define SCREEN_HEIGHT 64        // OLED display height in pixels
-// #define OLED_RESET 4           // Reset pin for OLED display
-// #define Oxygen_IICAddress ADDRESS_3  // I2C address for oxygen sensor
-// #define COLLECT_NUMBER 2       // Number of samples to collect (1-100)
-// #define LCD_IICAddress 0x3C    // I2C address for OLED display
-
 // RME (Respiration Monitoring Equipment) class
 class RME
 {
