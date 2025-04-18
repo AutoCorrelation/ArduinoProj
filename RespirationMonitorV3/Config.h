@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
 
 #define SCREEN_WIDTH 128        // OLED display width in pixels
 #define SCREEN_HEIGHT 64        // OLED display height in pixels
