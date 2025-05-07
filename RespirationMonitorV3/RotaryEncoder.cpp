@@ -1,6 +1,10 @@
 #include "RotaryEncoder.h"
 
+// Define the static instance pointer
+RotaryEncoder* RotaryEncoder::instance = nullptr;
+
 RotaryEncoder::RotaryEncoder() {
+    instance = this;
     RotaryEncoderInit();
 }
 
@@ -8,9 +12,23 @@ void RotaryEncoder::RotaryEncoderInit() {
     pinMode(ENCODER_PIN_A, INPUT);
     pinMode(ENCODER_PIN_B, INPUT);
     pinMode(ENCODER_BUTTON_PIN, INPUT);
+    
+    attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), isrRotationWrapper, FALLING);
+    attachInterrupt(digitalPinToInterrupt(ENCODER_BUTTON_PIN), buttonPressedWrapper, FALLING);
+}
 
-    attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A),RotationISR, FALLING);
-    attachInterrupt(digitalPinToInterrupt(ENCODER_BUTTON_PIN), buttonPressed, FALLING);
+// Static wrapper for rotation ISR
+void RotaryEncoder::isrRotationWrapper() {
+    if (instance) {
+        instance->RotationISR();
+    }
+}
+
+// Static wrapper for button ISR
+void RotaryEncoder::buttonPressedWrapper() {
+    if (instance) {
+        instance->buttonPressed();
+    }
 }
 
 void RotaryEncoder::RotationISR() {
@@ -42,4 +60,3 @@ void RotaryEncoder::resetRotationCount() {
     _count = 0;
 }
 
-    

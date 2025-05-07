@@ -20,6 +20,13 @@ class RotaryEncoder
         void resetRotationCount();
         int getRotationCount();
         bool isButtonPressed();
+
+        // Static instance pointer for ISR context
+        static RotaryEncoder* instance;
+
+        // Static ISR wrappers
+        static void isrRotationWrapper();
+        static void buttonPressedWrapper();
 };
 
 #endif
