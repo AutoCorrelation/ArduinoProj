@@ -16,9 +16,5 @@
 
 // I2C addresses
 #define SENSOR_I2C_ADDRESS 0x40
-#define motorA1 10
-#define motorA2 11
-#define motorB1 12
-#define motorB2 13
 
 #endif
