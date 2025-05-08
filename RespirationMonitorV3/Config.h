@@ -7,6 +7,8 @@
 #define Oxygen_IICAddress ADDRESS_3  // I2C address for oxygen sensor
 #define COLLECT_NUMBER 40       // Number of samples to collect (1-100)
 #define LCD_IICAddress 0x3C    // I2C address for OLED display
+#define OXYGEN_CONECTRATION 20.9
+#define CO2_CONECTRATION 0.04  // CO2 concentration in percentage
 
 // Pin definitions
 #define MOTOR_PWM_PIN 9

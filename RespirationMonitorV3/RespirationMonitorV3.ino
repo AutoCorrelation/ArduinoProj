@@ -11,8 +11,7 @@ SoftwareSerial BTSerial(6, 7); // RX, TX
 
 void setup()
 {
-    // Serial.begin(9600);
-    BTSerial.begin(9600); // Initialize Bluetooth serial communication
+    BTSerial.begin(9600);
     rme.init();
     rotaryEncoder.RotaryEncoderInit();
     motorController.init();
@@ -30,17 +29,17 @@ void loop()
         switch (count)
         {
         case 0:
-            /* code */
-            break;
-
-        case 1:
-            motorController.run(); // 5s
+            motorController.run(); // 30s
             motorController.stop();
+            delay(1000);
+            break;
+        case 1:
+            rme.SerialTest(&BTSerial); // Send data to Bluetooth
             delay(1000);
             break;
 
         case 2:
-            rme.SerialTest(&BTSerial); // Send data to Bluetooth
+            rme.reCalibration(); // Recalibrate sensors (not often needed)
             delay(1000);
             break;
         }

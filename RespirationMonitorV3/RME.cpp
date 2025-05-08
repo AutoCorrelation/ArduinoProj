@@ -71,8 +71,8 @@ float RME::readCO2Concentration()
 // RER = CO2 produced / O2 consumed
 // Also calculates fat and carbohydrate utilization rates
 float RME::calculateBreathingRate()
-{   
-    _breathingRate = _co2Concentration / (_oxygenOffset - _oxygenConcentration);
+{
+    _breathingRate = (_co2Concentration - CO2_CONECTRATION) / (OXYGEN_CONECTRATION - _oxygenConcentration);
     _fatsRate = (1 - _breathingRate) / 0.3 * 100.0;
     _carbsRate = 100 - _fatsRate;
     return _breathingRate;
@@ -112,10 +112,16 @@ void RME::displayValues()
     }
     else if (_breathingRate < 0.7)
     {
+        display.print(F("RER: "));
+        display.print(_breathingRate);
+        display.println(F(" units"));
         display.print(F("More breath plz"));
     }
     else if (1.0 < _breathingRate)
     {
+        display.print(F("RER: "));
+        display.print(_breathingRate);
+        display.println(F(" units"));
         display.print(F("Wait a Minute"));
     }
 
@@ -126,6 +132,15 @@ void RME::displayValues()
 // Prints O2 consumption and CO2 production
 void RME::SerialTest(SoftwareSerial *BTSerial)
 {
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    int textWidth = 90;  // "Sending Data..." is 15 characters at 6 pixels each.
+    int x = (SCREEN_WIDTH - textWidth) / 2;
+    display.setCursor(x, SCREEN_HEIGHT / 2);
+    display.println(F("Sending Data..."));
+    display.display();
+
     BTSerial->print(F("O2: "));
     BTSerial->print(_oxygenConcentration);
     BTSerial->println(F(" %"));
@@ -134,12 +149,12 @@ void RME::SerialTest(SoftwareSerial *BTSerial)
     BTSerial->print(_co2Concentration);
     BTSerial->println(F(" %"));
 
-    if (0.6 <= _breathingRate && _breathingRate <= 1.0)
-    {
-        BTSerial->print(F("RER: "));
-        BTSerial->print(_breathingRate);
-        BTSerial->println(F(" units"));
+    BTSerial->print(F("RER: "));
+    BTSerial->print(_breathingRate);
+    BTSerial->println(F(" units"));
 
+    if (0.7 <= _breathingRate && _breathingRate <= 1.0)
+    {
         BTSerial->print(F("fat: "));
         BTSerial->print(_fatsRate);
         BTSerial->println(F(" %"));
@@ -148,19 +163,33 @@ void RME::SerialTest(SoftwareSerial *BTSerial)
         BTSerial->print(_carbsRate);
         BTSerial->println(F(" %"));
     }
-    else if (_breathingRate < 0.6)
+    else if (_breathingRate < 0.7)
     {
-        BTSerial->print(F("More wait plz"));
+        BTSerial->print(F("Retry breath"));
     }
     else if (1.0 < _breathingRate)
     {
         BTSerial->print(F("Wait a Minute"));
     }
-
+    delay(10);
 }
 
 void RME::clearDisplay()
 {
     display.clearDisplay();
     display.display();
+}
+
+void RME::reCalibration()
+{
+    co2.forcedRecalibration(-1, 0);
+    oxygen.calibrate(OXYGEN_CONECTRATION, 0);
+    delay(10);
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 28);
+    display.println(F("Calibration Done"));
+    display.display();
+    delay
 }

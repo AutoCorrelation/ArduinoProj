@@ -55,9 +55,9 @@ private:
     // Define menu items
     static const int menuItemCount = 3;
     const char* menuItems[menuItemCount] = {
-        " 1: Init",
-        " 2: Measure&Motor",
-        " 3: Send Bluetooth"
+        " 1: Motor&Measure",
+        " 2: Send Bluetooth",
+        " 3: Calibrate(admin)"
     };
 };
 

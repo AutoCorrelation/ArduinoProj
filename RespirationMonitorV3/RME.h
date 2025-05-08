@@ -43,5 +43,6 @@ public:
     void SerialTest(SoftwareSerial *btserial);               // Test function for serial output
     void clearDisplay();             // Clear OLED display
     Adafruit_SSD1306 *getDisplay() {return &display;}          // OLED display object
+    void reCalibration();             // Recalibrate sensors
 };
 #endif
