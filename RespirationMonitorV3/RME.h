@@ -8,14 +8,16 @@
 #include <Adafruit_SSD1306.h>
 #include <DFRobot_OxygenSensor.h>
 #include <SparkFun_STC3x_Arduino_Library.h>
+#include <SoftwareSerial.h>
+#include "Config.h" // Include configuration file
 
 // Display configuration
-#define SCREEN_WIDTH 128        // OLED display width in pixels
-#define SCREEN_HEIGHT 64        // OLED display height in pixels
-#define OLED_RESET 4           // Reset pin for OLED display
-#define Oxygen_IICAddress ADDRESS_3  // I2C address for oxygen sensor
-#define COLLECT_NUMBER 2       // Number of samples to collect (1-100)
-#define LCD_IICAddress 0x3C    // I2C address for OLED display
+// #define SCREEN_WIDTH 128        // OLED display width in pixels
+// #define SCREEN_HEIGHT 64        // OLED display height in pixels
+// #define OLED_RESET 4           // Reset pin for OLED display
+// #define Oxygen_IICAddress ADDRESS_3  // I2C address for oxygen sensor
+// #define COLLECT_NUMBER 10       // Number of samples to collect (1-100)
+// #define LCD_IICAddress 0x3C    // I2C address for OLED display
 
 // RME (Respiration Monitoring Equipment) class
 class RME
@@ -38,6 +40,8 @@ public:
     float readCO2Concentration();     // Read CO2 concentration from sensor
     float calculateBreathingRate();   // Calculate breathing rate from sensor data
     void displayValues();             // Display values on OLED screen
-    void SerialTest();               // Test function for serial output
+    void SerialTest(SoftwareSerial *btserial);               // Test function for serial output
+    void clearDisplay();             // Clear OLED display
+    Adafruit_SSD1306 *getDisplay() {return &display;}          // OLED display object
 };
 #endif

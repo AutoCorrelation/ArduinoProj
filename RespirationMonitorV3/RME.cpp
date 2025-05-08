@@ -39,7 +39,7 @@ void RME::init()
         delay(1000);
     }
     co2.setBinaryGas(STC3X_BINARY_GAS_CO2_AIR_25);
-    co2.forcedRecalibration(-1, 0);
+    // co2.forcedRecalibration(-1, 0);
     display.clearDisplay();
 
     _oxygenOffset = readOxygenConcentration();
@@ -71,7 +71,7 @@ float RME::readCO2Concentration()
 // RER = CO2 produced / O2 consumed
 // Also calculates fat and carbohydrate utilization rates
 float RME::calculateBreathingRate()
-{
+{   
     _breathingRate = _co2Concentration / (_oxygenOffset - _oxygenConcentration);
     _fatsRate = (1 - _breathingRate) / 0.3 * 100.0;
     _carbsRate = 100 - _fatsRate;
@@ -124,9 +124,43 @@ void RME::displayValues()
 
 // Output test data to serial monitor
 // Prints O2 consumption and CO2 production
-void RME::SerialTest()
+void RME::SerialTest(SoftwareSerial *BTSerial)
 {
-    Serial.print(_oxygenOffset - _oxygenConcentration);
-    Serial.print(",");
-    Serial.println(_co2Concentration);
+    BTSerial->print(F("O2: "));
+    BTSerial->print(_oxygenConcentration);
+    BTSerial->println(F(" %"));
+
+    BTSerial->print(F("CO2: "));
+    BTSerial->print(_co2Concentration);
+    BTSerial->println(F(" %"));
+
+    if (0.6 <= _breathingRate && _breathingRate <= 1.0)
+    {
+        BTSerial->print(F("RER: "));
+        BTSerial->print(_breathingRate);
+        BTSerial->println(F(" units"));
+
+        BTSerial->print(F("fat: "));
+        BTSerial->print(_fatsRate);
+        BTSerial->println(F(" %"));
+
+        BTSerial->print(F("carbs: "));
+        BTSerial->print(_carbsRate);
+        BTSerial->println(F(" %"));
+    }
+    else if (_breathingRate < 0.6)
+    {
+        BTSerial->print(F("More wait plz"));
+    }
+    else if (1.0 < _breathingRate)
+    {
+        BTSerial->print(F("Wait a Minute"));
+    }
+
+}
+
+void RME::clearDisplay()
+{
+    display.clearDisplay();
+    display.display();
 }

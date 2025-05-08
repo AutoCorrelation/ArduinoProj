@@ -17,7 +17,7 @@ public:
     {}
 
     // Call this function periodically and pass the current encoder count.
-    void updateMenu(long encoderCount) {
+    int updateMenu(long encoderCount) {
         // Calculate selected menu index (wrap around)
         int selectedIndex = (int)(encoderCount % menuItemCount);
         if (selectedIndex < 0) {
@@ -47,6 +47,7 @@ public:
             y += MENU_ITEM_HEIGHT;
         }
         display->display();
+        return selectedIndex; // Return the index of the selected menu item
     }
 
 private:
@@ -54,9 +55,9 @@ private:
     // Define menu items
     static const int menuItemCount = 3;
     const char* menuItems[menuItemCount] = {
-        "Option 1",
-        "Option 2",
-        "Option 3"
+        " 1: Init",
+        " 2: Measure&Motor",
+        " 3: Send Bluetooth"
     };
 };
 

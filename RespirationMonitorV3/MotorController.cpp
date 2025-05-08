@@ -15,13 +15,12 @@ void MotorController::run() {
     digitalWrite(motorA2, LOW);
     digitalWrite(motorB1, HIGH);
     digitalWrite(motorB2, LOW);
-    delay(5000);
+    delay(30000);
 }
 
 void MotorController::stop() {
     digitalWrite(motorA1, LOW);
     digitalWrite(motorA2, LOW);
     digitalWrite(motorB1, LOW);
-    digitalWrite(motorB2, LOW);
-    delay(1000);
+    digitalWrite(motorB2, LOW);    
 }
