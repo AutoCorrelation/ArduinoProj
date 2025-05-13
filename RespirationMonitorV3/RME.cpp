@@ -191,5 +191,5 @@ void RME::reCalibration()
     display.setCursor(0, 28);
     display.println(F("Calibration Done"));
     display.display();
-    delay
+    delay(10);
 }
