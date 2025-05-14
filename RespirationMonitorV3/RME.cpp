@@ -96,12 +96,12 @@ void RME::displayValues()
     display.print(_co2Concentration);
     display.println(F(" %"));
 
+    display.print(F("RER: "));
+    display.print(_breathingRate);
+    display.println(F(" units"));
+
     if (0.7 <= _breathingRate && _breathingRate <= 1.0)
     {
-        display.print(F("RER: "));
-        display.print(_breathingRate);
-        display.println(F(" units"));
-
         display.print(F("fat: "));
         display.print(_fatsRate);
         display.println(F(" %"));
@@ -112,16 +112,10 @@ void RME::displayValues()
     }
     else if (_breathingRate < 0.7)
     {
-        display.print(F("RER: "));
-        display.print(_breathingRate);
-        display.println(F(" units"));
-        display.print(F("More breath plz"));
+        display.print(F("Retry breath"));
     }
     else if (1.0 < _breathingRate)
     {
-        display.print(F("RER: "));
-        display.print(_breathingRate);
-        display.println(F(" units"));
         display.print(F("Wait a Minute"));
     }
 
