@@ -1,16 +1,11 @@
 #include "RME.h"
 
-// RME (Respiration Monitor Environment) class implementation
-// Manages oxygen and CO2 sensors, OLED display, and calculates respiratory parameters
-
 // Constructor: Initialize display and sensor objects
 RME::RME() : display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET), oxygen(), co2() {}
 
 RME::~RME() {}
 
 // Initialize sensors and display
-// Verifies connection to O2 sensor and CO2 sensor
-// Sets up initial calibration
 void RME::init()
 {
     Serial.begin(9600);
@@ -39,48 +34,50 @@ void RME::init()
         delay(1000);
     }
     co2.setBinaryGas(STC3X_BINARY_GAS_CO2_AIR_25);
-    // co2.forcedRecalibration(-1, 0);
     display.clearDisplay();
 
     _oxygenOffset = readOxygenConcentration();
 }
 
-// Read oxygen concentration from sensor using multiple samples
+// Read oxygen concentration and update maximum value
 float RME::readOxygenConcentration()
 {
     _oxygenConcentration = oxygen.getOxygenData(COLLECT_NUMBER);
+    if (_oxygenConcentration < _minOxygen)
+    {
+        _minOxygen = _oxygenConcentration;
+    }
     return _oxygenConcentration;
 }
 
-// Read CO2 concentration from sensor
-// Returns 0 if negative value detected
+// Read CO2 concentration and update maximum value
 float RME::readCO2Concentration()
 {
     _co2Concentration = co2.getCO2();
+    if (_co2Concentration > _maxCO2)
+    {
+        _maxCO2 = _co2Concentration;
+    }
     if (_co2Concentration < 0)
         return _co2Concentration = 0;
     return _co2Concentration;
-    // if (co2.measureGasConcentration())
-    // {
-    //     return co2.getCO2();
-    // }
-    // return -1; // 에러 발생 시 -1 반환
 }
 
-// Calculate Respiratory Exchange Ratio (RER)
-// RER = CO2 produced / O2 consumed
-// Also calculates fat and carbohydrate utilization rates
+// Calculate breathing rate using maximum VCO2 and VO2
 float RME::calculateBreathingRate()
 {
-    _breathingRate = (_co2Concentration - CO2_CONECTRATION) / (OXYGEN_CONECTRATION - _oxygenConcentration);
+    _breathingRate = (_maxCO2 - CO2_CONECTRATION) / (OXYGEN_CONECTRATION - _minOxygen) ;
+    
     _fatsRate = (1 - _breathingRate) / 0.3 * 100.0;
     _carbsRate = 100 - _fatsRate;
+    
+    // Reset maximum values for the next measurement cycle
+    // _maxCO2 = 0;
+    // _minOxygen = 100;
+    
     return _breathingRate;
 }
 
-// Update OLED display with current measurements
-// Shows O2, CO2, RER, fat and carb percentages
-// Displays status messages based on RER value
 void RME::displayValues()
 {
     display.clearDisplay();
@@ -89,11 +86,11 @@ void RME::displayValues()
     display.setCursor(0, 0);
 
     display.print(F("O2: "));
-    display.print(_oxygenConcentration);
+    display.print(_minOxygen);
     display.println(F(" %"));
 
     display.print(F("CO2: "));
-    display.print(_co2Concentration);
+    display.print(_maxCO2);
     display.println(F(" %"));
 
     display.print(F("RER: "));
@@ -114,7 +111,7 @@ void RME::displayValues()
     {
         display.print(F("Retry breath"));
     }
-    else if (1.0 < _breathingRate)
+    else if (_breathingRate > 1.0)
     {
         display.print(F("Wait a Minute"));
     }
@@ -122,48 +119,44 @@ void RME::displayValues()
     display.display();
 }
 
-// Output test data to serial monitor
-// Prints O2 consumption and CO2 production
 void RME::SerialTest(SoftwareSerial *BTSerial)
 {
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
-    int textWidth = 90;  // "Sending Data..." is 15 characters at 6 pixels each.
+    int textWidth = 90;
     int x = (SCREEN_WIDTH - textWidth) / 2;
     display.setCursor(x, SCREEN_HEIGHT / 2);
     display.println(F("Sending Data..."));
     display.display();
 
-    BTSerial->print(F("O2: "));
-    BTSerial->print(_oxygenConcentration);
-    BTSerial->println(F(" %"));
-
-    BTSerial->print(F("CO2: "));
-    BTSerial->print(_co2Concentration);
-    BTSerial->println(F(" %"));
-
-    BTSerial->print(F("RER: "));
-    BTSerial->print(_breathingRate);
-    BTSerial->println(F(" units"));
+    // BTSerial->print(F("RER: "));
+    // BTSerial->print(_breathingRate);
+    // BTSerial->println(F(" units"));
 
     if (0.7 <= _breathingRate && _breathingRate <= 1.0)
     {
-        BTSerial->print(F("fat: "));
+        BTSerial->print(F("지방분해: "));
         BTSerial->print(_fatsRate);
         BTSerial->println(F(" %"));
 
-        BTSerial->print(F("carbs: "));
+        BTSerial->print(F("탄수화물분해: "));
         BTSerial->print(_carbsRate);
         BTSerial->println(F(" %"));
+
+        BTSerial->print(F("에너지: "));
+        BTSerial->print((1.24 * _breathingRate + 3.81) * 0.648);
+        BTSerial->println(F(" kcal"));
+         
+        BTSerial->println(F("운동을 잘하고 있습니다"));
     }
     else if (_breathingRate < 0.7)
     {
-        BTSerial->print(F("Retry breath"));
+        BTSerial->print(F("약한 운동중이십니다"));
     }
-    else if (1.0 < _breathingRate)
+    else if (_breathingRate > 1.0)
     {
-        BTSerial->print(F("Wait a Minute"));
+        BTSerial->print(F("엄청난 운동 중입니다"));
     }
     delay(10);
 }
@@ -178,6 +171,11 @@ void RME::reCalibration()
 {
     co2.forcedRecalibration(-1, 0);
     oxygen.calibrate(OXYGEN_CONECTRATION, 0);
+
+    _maxCO2 = 0;
+    _minOxygen = 100;
+    _oxygenOffset = readOxygenConcentration();
+
     delay(10);
     display.clearDisplay();
     display.setTextSize(1);
